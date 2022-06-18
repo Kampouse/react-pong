@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 const CanvasPractice = () => {
 
     // get canvas
+	
     const canvasRef = useRef()
 
     // set frame counter
@@ -15,21 +16,22 @@ const CanvasPractice = () => {
     const [positionX, setPositionX] = useState(165)
     const [positionY, setPositionY] = useState(165)
     const [lastKey, setlastKey] = useState('')
-
+	const [playerY, setPlayerY] = useState(165)
     const [dx, setDx] = useState(2)
     const [dy, setDy] = useState(2)
-    const [motionType, setMotionType] = useState('Circle')
-
     // update the counter
 	let handleKey = (event) => {
 		setlastKey(event.key)
-		console.log(lastKey)
+	   if (event.key === 'ArrowUp' || event.key === 'k') 
+		   setPlayerY(playerY - 15)
+	else if (event.key === 'ArrowDown' || event.key === 'j')
+		   setPlayerY(playerY + 15)
 	}
 	//detect collision btw ball and box
 	let detectCollision = (box,ball) => {
-		if(ball.x + ball.radius > box.x && ball.x - ball.radius < box.x + box.width 
-			&& ball.y + ball.radius > box.y && 
-			ball.y - ball.radius < box.y + box.height)
+		if(ball.x + ball.radius >= box.x && ball.x - ball.radius <= box.x + box.width 
+			&& ball.y + ball.radius >= box.y && 
+			ball.y - ball.radius <= box.y + box.height)
 			return true
 			}
 // if it the ball go out of bound it bounce back
@@ -55,14 +57,14 @@ const CanvasPractice = () => {
 		context.fill()
 		context.stroke()
 		context.fillStyle = '#ff0000'
-        context.fillRect(0, ball.y - 10 , 20, 20)
+        context.fillRect(10, ball.playerY - 10 , 20, 20)
 		context.fillStyle = '#0000ff'
 		context.fillRect(canvas.width - 40, ball.y - 10, 20, 20)
 
 		}
 		//should have user input set for the x and y position of the box currently bogus data
 	   let collision = (canvas) => {
-		if( detectCollision({x:0,y:positionY - 10,width:20,height:20},
+		if( detectCollision({x:10,y:playerY,width:20,height:20},
 							{x:positionX,y:positionY,radius:12}))
 		{
 			setDy( -dy + (Math.random() * 2))
@@ -100,7 +102,7 @@ const CanvasPractice = () => {
 		bounceBack({x:0,y:0,width:350,height:350},{x:positionX,y:positionY,radius:10})
 		collision (canvas)
 		//output the draw on the canvas
-		drawCanvas(context,canvas,{x:positionX,y:positionY,radius:10})
+		drawCanvas(context,canvas,{x:positionX,y:positionY,radius:10,playerY:playerY})
 		//if the was no change from the counter then stop the animation
     }, [counter])
 // that tabindex is the key for the component to be interactive to the user otherwise there no focus
